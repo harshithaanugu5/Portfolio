@@ -1,0 +1,183 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --edge: rgba(255, 255, 255, 0.08);
+  --edge-strong: rgba(255, 255, 255, 0.16);
+  --surface: rgba(255, 255, 255, 0.032);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+  background-color: #04060d;
+  /* `clip` (not `hidden`) so scroll-reveal transforms that start slightly
+     off-screen never create a horizontal scrollbar, while position: fixed
+     and smooth scrolling keep working. */
+  overflow-x: clip;
+}
+
+body {
+  @apply bg-ink-950 text-slate-400 antialiased;
+  overflow-x: clip;
+}
+
+::selection {
+  background: rgba(34, 211, 238, 0.28);
+  color: #fff;
+}
+
+/* Scrollbar */ 
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #04060d;
+}
+::-webkit-scrollbar-thumb {
+  background: #1b2540;
+  border-radius: 99px;
+  border: 2px solid #04060d;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2a3757;
+}
+
+@layer utilities {
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-6;
+  }
+  .section {
+    @apply py-24 md:py-32;
+  }
+  .eyebrow {
+    @apply inline-flex items-center gap-2 font-mono text-xs font-medium uppercase tracking-[0.22em] text-accent-cyan;
+  }
+  .heading {
+    @apply mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-[2.75rem] md:leading-[1.1];
+  }
+  .subheading {
+    @apply mt-4 max-w-2xl text-base leading-relaxed text-slate-400 md:text-lg;
+  }
+  .gradient-text {
+    background-image: linear-gradient(100deg, #22d3ee 0%, #38bdf8 38%, #a78bfa 100%);
+    @apply bg-clip-text text-transparent;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--edge);
+    @apply rounded-2xl backdrop-blur-sm;
+  }
+  .card-hover {
+    @apply transition duration-300;
+  }
+  .card-hover:hover {
+    border-color: rgba(34, 211, 238, 0.35);
+    background: rgba(255, 255, 255, 0.055);
+    transform: translateY(-3px);
+  }
+  .chip {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--edge);
+    @apply inline-flex items-center rounded-full px-2.5 py-1 font-mono text-[11px] tracking-wide text-slate-300 transition;
+  }
+  .chip:hover {
+    border-color: rgba(34, 211, 238, 0.4);
+    color: #e2e8f0;
+    background: rgba(34, 211, 238, 0.08);
+  }
+  .rule {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.12) 20%,
+      rgba(255, 255, 255, 0.12) 80%,
+      transparent
+    );
+    @apply h-px w-full;
+  }
+  /* Thin dotted connector used between sections */
+  .dotted-v {
+    background-image: radial-gradient(circle, rgba(34, 211, 238, 0.55) 1.2px, transparent 1.2px);
+    background-size: 2px 10px;
+    background-repeat: repeat-y;
+    @apply w-0.5;
+  }
+}
+
+/* Backdrops */
+.grid-bg {
+  background-image: linear-gradient(to right, rgba(148, 163, 184, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.055) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+.grid-mask {
+  mask-image: radial-gradient(ellipse 80% 65% at 50% 35%, #000 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 65% at 50% 35%, #000 40%, transparent 100%);
+}
+.dot-bg {
+  background-image: radial-gradient(rgba(148, 163, 184, 0.13) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+.noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* Gradient hairline top border on cards */
+.edge-top::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.55), transparent);
+}
+
+/* Marquee wrapper fade */
+.marquee-mask {
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+/* ── Connector animations (PipelineFlow / SkillsGraph) ─────────────── */
+
+/* Marching dots along a dotted connector */
+@keyframes dash-flow {
+  to {
+    stroke-dashoffset: -1000;
+  }
+}
+.flow-dots {
+  animation: dash-flow 22s linear infinite;
+}
+.flow-dots-slow {
+  animation: dash-flow 40s linear infinite reverse;
+}
+
+/* A single bright dash that travels exactly one lap of the path.
+   --len is the measured getTotalLength() of that path. */
+@keyframes comet {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: calc(-1 * var(--len, 400px));
+  }
+}
+.comet {
+  animation: comet var(--dur, 4s) linear infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
